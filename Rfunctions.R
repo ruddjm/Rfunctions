@@ -251,18 +251,18 @@ latexmodeloutputGeneric <- function(mod, i,
       insert.bottom = paste("Adjusted to: ", flojito, sep = ""),
       longtable = TRUE, file = "", lines.page =.Machine$integer.max)
 
-   pdf(paste("graphics/", modname[i], "anovaplot.pdf", sep = ""))
+   pdf(paste("figures/", modname[i], "anovaplot.pdf", sep = ""))
        plot(anova(mod[[i]]), newnames = varlabels)
    dev.off()
-   cat("\\clearpage \\clearpage \\begin{figure}\\begin{center}\\caption{", modlabels[i], " Model}\\includegraphics{graphics/",
+   cat("\\clearpage \\clearpage \\begin{figure}\\begin{center}\\caption{", modlabels[i], " Model}\\includegraphics{figures/",
       modname[i], "anovaplot.pdf}\\end{center}\\end{figure}\n", sep = "")
-   pdf(paste("graphics/", modname[i], "oddsratios.pdf", sep = ""))
+   pdf(paste("figures/", modname[i], "oddsratios.pdf", sep = ""))
       plot(summary(mod[[i]], #est.all = FALSE,
          #comorbidsum = c(1, 4), ageCentered = c(1, -1),
          vnames = "labels"),
          log = TRUE, q = 0.95, col = "#55555588", col.points = "black")
    dev.off()
-   cat("\\clearpage \\begin{figure}\\begin{center}\\caption{", modlabels[i], " model}\\includegraphics{graphics/", modname[i], "oddsratios.pdf}\\end{center}\\end{figure}\n", sep="")}
+   cat("\\clearpage \\begin{figure}\\begin{center}\\caption{", modlabels[i], " model}\\includegraphics{figures/", modname[i], "oddsratios.pdf}\\end{center}\\end{figure}\n", sep="")}
 
  ## Example of usage
 ##junkness <- lapply(X = seq_along(models), FUN = latexmodeloutput, mod = models, modlabels = modlabels, modname = "origMods")
