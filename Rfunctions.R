@@ -6,7 +6,7 @@ library(Hmisc)
 # TK's function
 tab <- function(...){ table(..., useNA='a') }
 
-grepDfNames <- function(string, dat){grep(string, names(dat), value = TRUE)}
+grepDfNames <- function(string, dat, ...){grep(string, names(dat), value = TRUE, ...)}
 ######################################
 # Format a confidence interval to put in a report. Make a scalar character.
 formatCI <- function(x, digs = 2){
