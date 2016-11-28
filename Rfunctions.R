@@ -1,3 +1,4 @@
+under.unix <- TRUE
 library(Hmisc)
 
 ###################################################
@@ -5,7 +6,7 @@ library(Hmisc)
 ###################################################
 # TK's function
 tab <- function(...){ table(..., useNA='a') }
-
+under.unix <- TRUE
 grepDfNames <- function(string, dat, ...){grep(string, names(dat), value = TRUE, ...)}
 ######################################
 # Format a confidence interval to put in a report. Make a scalar character.
