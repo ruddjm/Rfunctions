@@ -1,5 +1,4 @@
-latex.anova.rms <-
-function(object,
+latex.anova.rms <- function(object,
            title=if(under.unix)
            paste('anova',attr(object,'obj.name'),sep='.')
            else
