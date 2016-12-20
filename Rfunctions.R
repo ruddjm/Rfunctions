@@ -38,9 +38,9 @@ freqPctMarginalOneDim <- function(x, ...){
    tabl}
 
 # The test argument should be a logical vector
-freqPctScalar <- function(test, ...){
+freqPctScalar <- function(test, digs = 1, ...){
    test <- na.omit(test)
-   paste(sum(test), " (", round(100*mean(test), 1), "%)", sep = "")
+   paste(sum(test), " (", round(100*mean(test), digs), "%)", sep = "")
   }
 
 freqPctMarginalDatFrame <- function(x, y, test = FALSE, ...){
