@@ -224,7 +224,7 @@ latex.summaryM.backwards <- function (object, title = first.word(deparse(substit
             }
             else cs <- formatCons(stats[[i]], nam, tr, x$group.freq, 
                 prmsd, prtest = prtest, formatArgs = formatArgs, 
-                round = round, latex = TRUE, testUsed = testUsed, 
+                round = round, testUsed = testUsed, 
                 middle.bold = middle.bold, outer.size = outer.size, 
                 msdsize = msdsize, pdig = pdig, eps = eps, footnoteTest = gt1.test)
             cstats <- rbind(cstats, cs)
