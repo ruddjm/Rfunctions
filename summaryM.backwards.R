@@ -217,7 +217,7 @@ latex.summaryM.backwards <- function (object, title = first.word(deparse(substit
                   if (length(x$group.freq)) 
                     x$group.freq
                   else x$n[i], what, npct, pctdig, exclude1, 
-                  long, prtest, latex = TRUE, testUsed = testUsed, 
+                  long, prtest, testUsed = testUsed, 
                   npct.size = npct.size, pdig = pdig, eps = eps, 
                   footnoteTest = gt1.test)
                 nn <- c(nn, rep(NA, nrow(cs) - 1))
