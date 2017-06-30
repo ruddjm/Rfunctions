@@ -90,6 +90,21 @@ prop.testExtract <- function(proptestObj, pctOrProp = "percent", digits = 1){
    out["CI"] <- paste("[", paste(out[c("L", "U")], collapse = ", "), "]", sep = "")
    return(out[c("prop 1", "prop 2", "Difference", "CI", "p-value")])}
 ######################################
+## Get concise information from test of difference in means.
+t.testExtract <- function(ttestObj, digits = 1){
+   # Make a named vector of useful elements from the obj. Make vector or list? if vector must be all same type (in this case character)
+   # c(estimated mean 1 estimated mean 2, estimated difference, formatted ci (character), pvalue)
+
+   # Round the first 4 elements at the same time. Then add formatted ci. Then select elements in the order desired
+   # estimated difference
+   out <- c(round(
+         c(ttestObj$estimate, "Difference" = mean(ttestObj$conf.int), ttestObj$conf.int), digits),
+         "p-value" = format.pval(ttestObj$p.value, digits = 3, eps = 0.001))
+   grps = names(out)[1:2] = sub('mean in group ', '', names(out)[1:2])
+   names(out)[4:5] <- c("L", "U")
+   out["CI"] <- paste("[", paste(out[c("L", "U")], collapse = ", "), "]", sep = "")
+   return(out[c(grps, "Difference", "CI", "p-value")])}
+######################################
 # This removes unused factors from a data frame.
 updateFactors <- function(x) {
   for(i in which(sapply(x, is.factor))) {
