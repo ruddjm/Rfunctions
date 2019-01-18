@@ -4,9 +4,13 @@ library(Hmisc)
 ###################################################
 ## General purpose functions
 ###################################################
-# TK's function
-tab <- function(...){ table(..., useNA='a') }
+# Calculate the mode of a numeric vector. The mode() function in R does not give the mode (most frequently occurring value). Instead, it returns the type of an object.
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
 
+# Grep, for column names of a dataframe, returning the values rather than the indices.
 grepDfNames <- function(string, dat, ...){grep(string, names(dat), value = TRUE, ...)}
 ######################################
 # Format a confidence interval to put in a report. Make a scalar character.
@@ -19,6 +23,7 @@ formatCIformat <- function(x, digs = 2, ...){
    x <- formatC(x, format = "f", digits = digs, ...)
    return(paste(x[1], " (CI: ", x[2], ", ", x[3], ")", sep = ""))}
 ##################
+## Return a better formatted prop table, as a matrix. Adds informative column names.
 freqPctMarginal <- function(x, y, pval.digs = 3, test = FALSE, ...){
    OK <- complete.cases(x, y)
 
@@ -75,7 +80,7 @@ myprop <- function(formula, data) {
 }
 myprop(Cole ~ Beck, colebeck)}
 ######################################
-## Get concise information from test of difference in proportions.
+## Get concise, formatted information from test of difference in proportions.
 prop.testExtract <- function(proptestObj, pctOrProp = "percent", digits = 1){
    # Make a named vector of useful elements from the obj. Make vector or list? if vector must be all same type (in this case character)
    # c(estimated prop 1 estimated prop 2, estimated difference, formatted ci (character), pvalue)
@@ -90,7 +95,7 @@ prop.testExtract <- function(proptestObj, pctOrProp = "percent", digits = 1){
    out["CI"] <- paste("[", paste(out[c("L", "U")], collapse = ", "), "]", sep = "")
    return(out[c("prop 1", "prop 2", "Difference", "CI", "p-value")])}
 ######################################
-## Get concise information from test of difference in means.
+## Get concise, formatted information from test of difference in means.
 t.testExtract <- function(ttestObj, digits = 1){
    # Make a named vector of useful elements from the obj. Make vector or list? if vector must be all same type (in this case character)
    # c(estimated mean 1 estimated mean 2, estimated difference, formatted ci (character), pvalue)
@@ -112,6 +117,7 @@ updateFactors <- function(x) {
   }
   x}
 ####################
+# Boxplots overlayed with dotplots
 boxplots <- function(groupvar, yvar, data, box = TRUE, strip = TRUE, ...){
    if(box == TRUE){
       boxplot(data[[yvar]] ~ data[[groupvar]],
@@ -126,7 +132,8 @@ boxplots <- function(groupvar, yvar, data, box = TRUE, strip = TRUE, ...){
       ylab = label(data[[yvar]]),
       xlab = label(data[[groupvar]]), ...)}
 #################################
-#Should work on vectors if pasteit = FALSE, but does not work for vectors if vectors = TRUE.
+# Calculate a Wald confidence interval and return a formatted text string.
+#Should work on vectors if pasteit = FALSE, but does not work for vectors if vectors = TRUE.	
 normalCI <- function(est, se, alpha = 0.05, digits = 2, exponentiate = FALSE, roundit = TRUE, pasteit = FALSE, ciOnly = FALSE){
    # Wald
    value <- cbind(est, est - qnorm(1-alpha/2)*se, est + qnorm(1-alpha/2)*se)
@@ -155,11 +162,12 @@ spearmanCI <- function(data, x, y, digits = 2, R = 800, level = 0.95){
       pval = format.pval(cor.test(data[[x]], data[[y]],
          use = "pairwise.complete.obs", method = "spearman")$p.value, eps = 0.0001, digits = digits)))}
 ##################
+# Formatted quartiles as a string	
 inlineQ <- function(data, var, digs = 0){
    paste("(Q1, Q3: ", paste(round(quantile(data[[var]], probs = c(0.25, 0.75), na.rm = TRUE), 
       digits = digs), collapse = ", "), ")", sep = "")}
 ########################################
-# Remove variables that are all missing. 
+# Remove variables that are all missing more than some threshold of values. 
 removeAllMissing <- function(x, fracmiss = 1) {
    # fracmiss the maximum permissable proportion of NAs for a variable to be kept. Default is to keep all variables no matter how many NAs are present.
    N <- nrow(x)
@@ -500,6 +508,7 @@ geeglmoutput <- function(mod, rownms = NULL, lablep = "", caption = "auto", dat 
 ## Global scoring functions
 ##################################################################################
 ##################################################################################
+## These are for scoring likert scales.	
 reverseCode <- function(items, intercept, object){
    # items should be the names of the items in object that need to be reverse coded. If object is a matrix, can use colnames().
    for(i in items){
@@ -637,7 +646,7 @@ scoreItFlex <- function(itemNames, dataFrame, choiceValues,
 ## End of global scoring functions
 ##################################################################################
 ##################################################################################
-#########!!!!!!!!SYNC WITH OTHER FILE!!!!!!
+
 maketable <- function(x, y, pval.digs = 3, test = FALSE, ...){
    OK <- complete.cases(x, y)
  
@@ -663,45 +672,11 @@ maketable.df <- function(x, y, test = FALSE, ...){
       #c(paste("(", round(100*prop.table(table(x, y), ...), 0), "%)", sep = ""))), 
       #FUN = paste, MARGIN = 1, collapse = " "),
 
-# Example
-#Cole <- factor(c("Yes", "Yes", "No", "No"))
-# Beck <- factor(c("No", "Yes", "No", "No"))
-# colebeck <- data.frame(Cole, Beck)
-#with(colebeck, maketable(y = Cole, x = Beck))
-#with(colebeck, maketable(y = Cole, x = Beck, margin = 1))
 
-# Cole wrote this. 
-# myprop <- function(formula, data) {
-#   trm <- as.character(attr(terms(formula), 'variables'))[-1]
-#   x <- table(data[,trm[1]], data[,trm[2]])
-#   y <- prop.table(x)
-#  # list(
-#     matrix(sprintf("%s (%0.f%%)", x, y*100), nrow=nrow(x), dimnames=dimnames(x)) #,
-#   #  format.pval(chisq.test(trm[1], trm[2])$p.value, eps = 0.001, digits = pval.digs)
-#  # )
-# }
-# myprop(Cole ~ Beck, colebeck)
-
-#Should work on vectors if pasteit = FALSE, but does not work for vectors if vectors = TRUE.
-loglogCI <- function(est, se, alpha = 0.05, digits = 2, exponentiate = FALSE, roundit = TRUE, pasteit = FALSE, ciOnly = FALSE){
-     # See page 63 of Competing Risks by Pintilie
-   # Wald
-   A <- -qnorm(1-alpha/2)*se/(est*log(est))
-   value <- cbind(est, est^(exp(A)), est^exp(-A))
-   if(exponentiate == TRUE){value <- exp(value)}
-   if(ciOnly == TRUE){value <- value[ , -1]}
-   if(roundit == TRUE){value <- round(value, digits = digits)}
-   if(pasteit == TRUE){
-      if(ciOnly == TRUE){value <- paste("[", paste(value, collapse = ", "), "]", sep = "")} else {
-      value <- paste(value[ , 1], ", ", "[", paste(value[ , c(2, 3)], collapse = ", "), "]", sep = "")}}
-   #dimnames(value) <- list(names(est), c("est", "lower", "upper"))
-   return(value)}
-#########
-#########
 #########
 #############
 #############
-# for output of a model fit with multinom(). This is adapted from Jon's code.
+# for output of a model fit with multinom(). This is adapted from Jon Schildcrout's code.
 multinomOutput <- function(fit, digits = 2, latex = TRUE, return = FALSE, caption = NULL, rownms = NULL, labelp = NULL, pdig = 3, ...){
    s <- summary(fit)
 
@@ -799,7 +774,8 @@ modeloutput <- function(mod, rownms, lablep = "", caption = "auto", dat = plfirs
 ###################################################
 ## Survival analysis functions (other than model output, which is above)
 ###################################################
-
+##################
+## Compute a log log confidence interval		   
 #Should work on vectors if pasteit = FALSE, but does not work for vectors if vectors = TRUE.
 loglogCI <- function(est, se, alpha = 0.05, digits = 2, exponentiate = FALSE, roundit = TRUE, pasteit = FALSE, ciOnly = FALSE){
      # See page 63 of Competing Risks by Pintilie
@@ -819,10 +795,12 @@ loglogCI <- function(est, se, alpha = 0.05, digits = 2, exponentiate = FALSE, ro
 ###################################################
 ## Misc functions
 ###################################################
+## Read and run an R file from a secure URL 		   
 sourceHttps <- function(url){
    library(RCurl)
    eval(expr = parse(text = getURL(url)), envir = parent.frame())}
 ########################
+## Super handy function to make 		   
 exclude <- function(constraints, data, idvarname){
    currentn <- rep(NA, length(constraints))
    tempids <- data[[idvarname]]
@@ -844,7 +822,7 @@ exclude <- function(constraints, data, idvarname){
    #varsAllMissing <-
    return(list(table = output, analysisdata = analysisdata, excludedData = excludedData))}
 #######################################
-# This function is to control false discovery rate with the function of V is 1.
+# This function is to adjust/correct p-values to control false discovery rate with the function of V is 1.
 fdr <- function(Q = 0.1, pvals, testnames){
    V <- length(pvals)
    tmp <- data.frame(testnames = testnames, pvals = pvals, compare = Q*rank(pvals)/V)
@@ -905,35 +883,8 @@ plot.normalCI <- function(obj, truth = NULL, ...){
 ###################################################
 
 
-###################################################
-##  functions
-###################################################
 
 
-
-###################################################
-## End of  functions
-###################################################
-
-###################################################
-##  functions
-###################################################
-
-
-
-###################################################
-## End of  functions
-###################################################
-
-###################################################
-##  functions
-###################################################
-
-
-
-###################################################
-## End of  functions
-###################################################
 
 
 
