@@ -800,7 +800,7 @@ sourceHttps <- function(url){
    library(RCurl)
    eval(expr = parse(text = getURL(url)), envir = parent.frame())}
 ########################
-## Super handy function to make 		   
+## Super handy function to make consort-type flow diagrams showing number of patients excluded for different exclusionary criteria.		   
 exclude <- function(constraints, data, idvarname){
    currentn <- rep(NA, length(constraints))
    tempids <- data[[idvarname]]
