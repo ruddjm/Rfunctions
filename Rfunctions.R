@@ -43,11 +43,11 @@ freqPctMarginalOneDim <- function(x, ...){
    tabl}
 
 # The test argument should be a logical vector
-freqPctScalar <- function(test, digs = 1, ...){
+freqPctScalar = function(test, digs = 1, ...){
    test <- na.omit(test)
-   paste(sum(test), " (", round(100*mean(test), digs), "%)", sep = "")
+   paste(formatC(sum(test), big.mark = ','), " (", round(100*mean(test), digs), "%)", sep = "")
   }
-
+	
 freqPctMarginalDatFrame <- function(x, y, test = FALSE, ...){
    OK <- complete.cases(x, y)
 
@@ -56,9 +56,13 @@ freqPctMarginalDatFrame <- function(x, y, test = FALSE, ...){
       ncol = 2,
       dimnames = list(levels(x), levels(y))),
       stringsAsFactors = FALSE)
-   if(test) tabl$pval <- c(ifelse(!((nlevels(factor(x[OK])) < 2L) || (nlevels(factor(y[OK])) < 2L)), chisq.test(x, y)$p.value, NA), rep(NA, nlevels(x) - 1))
+	# format.pval(chisq.test(x, y)$p.value, eps = 0.001, digits = pval.digs), NA)
+   if(test) tabl$pval <- c(ifelse(!((nlevels(factor(x[OK])) < 2L) || (nlevels(factor(y[OK])) < 2L))
+			   , chisq.test(x, y)$p.value, NA)
+			   , rep(NA, nlevels(x) - 1))
    tabl}
 
+	
 # Example
 if(FALSE){
 Cole <- factor(c("Yes", "Yes", "No", "No"))
@@ -647,34 +651,6 @@ scoreItFlex <- function(itemNames, dataFrame, choiceValues,
 ##################################################################################
 ##################################################################################
 
-maketable <- function(x, y, pval.digs = 3, test = FALSE, ...){
-   OK <- complete.cases(x, y)
- 
-   tabl <- matrix(
-      sprintf("%s (%0.f%%)", table(x, y), 100*prop.table(table(x, y), ...)),  
-      ncol = 2,
-      dimnames = list(levels(x), levels(y)))
-   if(test) cbind(tabl, c(ifelse(!((nlevels(factor(x[OK])) < 2L) || (nlevels(factor(y[OK])) < 2L)), format.pval(chisq.test(x, y)$p.value, eps = 0.001, digits = pval.digs), NA), rep(NA, nlevels(x) - 1))) else tabl
-}
-
-maketable.df <- function(x, y, test = FALSE, ...){
-   OK <- complete.cases(x, y)
- 
-   tabl <- data.frame(matrix(
-      sprintf("%s (%0.f%%)", table(x, y), 100*prop.table(table(x, y), ...)),  
-      ncol = 2,
-      dimnames = list(levels(x), levels(y))), 
-      stringsAsFactors = FALSE)
-   if(test) tabl$pval <- c(ifelse(!((nlevels(factor(x[OK])) < 2L) || (nlevels(factor(y[OK])) < 2L)), chisq.test(x, y)$p.value, NA), rep(NA, nlevels(x) - 1))
-   tabl}
-
-      #apply(cbind(c(table(x, y)), 
-      #c(paste("(", round(100*prop.table(table(x, y), ...), 0), "%)", sep = ""))), 
-      #FUN = paste, MARGIN = 1, collapse = " "),
-
-
-#########
-#############
 #############
 # for output of a model fit with multinom(). This is adapted from Jon Schildcrout's code.
 multinomOutput <- function(fit, digits = 2, latex = TRUE, return = FALSE, caption = NULL, rownms = NULL, labelp = NULL, pdig = 3, ...){
